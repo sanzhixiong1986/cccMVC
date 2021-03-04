@@ -1,1 +1,1 @@
-# cccMVC
+# 这次教程是关于cocos creator 的一些封装总结
