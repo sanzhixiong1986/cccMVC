@@ -6,3 +6,5 @@
 
 [第三天：优化](https://github.com/sanzhixiong1986/cccMVC/blob/main/README2.md)
 
+[第四天：框架设计-进入游戏](https://github.com/sanzhixiong1986/cccMVC/blob/main/README3.md)
+
