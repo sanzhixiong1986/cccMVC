@@ -92,7 +92,7 @@
 
   开发的时候,查看内存占用是常用的调试手段，Cocos Creator如何查看游戏运行时的内存的详情呢？我们可以把Cocos Creator切换到浏览器预览的模式，运行游戏，游戏在浏览器中运行起来，按F12，点开开发选项的”Memory”, 点击内存快照，这样就把整个内存占用的情况给你列出来了。哪些类型的对象占了多少内存，这样你就能分析出来内存的分布情况。如下图
 
-  ![](/Users/joy/Documents/GitHub/cccMVC/1.png)
+  ![](https://github.com/sanzhixiong1986/cccMVC/blob/main/1.png)
 
 ![](/Users/joy/Documents/GitHub/cccMVC/2.png)
 
@@ -100,7 +100,7 @@
 
   我们可以把Cocos Creator切换到浏览器预览的模式，运行游戏，游戏在浏览器中运行起来，按F12, 打开Performance 
 
-  ![](/Users/joy/Documents/GitHub/cccMVC/3.png)
+  ![](https://github.com/sanzhixiong1986/cccMVC/blob/main/3.png)
 
 ![](/Users/joy/Documents/GitHub/cccMVC/4.png)
 
