@@ -4,3 +4,5 @@
 
 [第二天：屏幕适配](https://github.com/sanzhixiong1986/cccMVC/blob/main/README1.md)
 
+[第三天：优化](https://github.com/sanzhixiong1986/cccMVC/blob/main/README2.md)
+
