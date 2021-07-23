@@ -8,3 +8,4 @@
 
 [第四天：框架设计-进入游戏](https://github.com/sanzhixiong1986/cccMVC/blob/main/README3.md)
 
+第五天：资源管理模块

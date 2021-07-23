@@ -1,5 +1,16 @@
 
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node , AudioClip} from 'cc';
+import ResMgr from '../Framework/Mgr/ResMgr';
+
+var resPkg = {
+    "Sounds": [
+        { assetType: cc.AudioClip, urls: 
+            ["CK_attack1", 
+            "Qinbing_die"
+        ]},
+    ]
+}
+
 export class GameApp extends cc.Component {
     public static Instance: GameApp = null as unknown as GameApp
     onLoad(): void {
@@ -14,10 +25,14 @@ export class GameApp extends cc.Component {
 
     // 游戏逻辑入口
     public EnterGame(): void {
-        console.log("Enter Game ....!");
+        console.log("Enter Game ....!",ResMgr.Instance);
 
-        this.EnterLoadingScene();
-        // this.EnterLoginScene();
+        //加载成功
+        // ResMgr.Instance.preloadResPkg(resPkg, (now: any, total: any)=>{
+        //     console.log(now, total);
+        // }, ()=>{
+        //     this.EnterLoadingScene();
+        // });
     }
 
     public EnterLoadingScene(): void {
@@ -28,6 +43,13 @@ export class GameApp extends cc.Component {
         // end
 
         // 释放我们的游戏UI
+        // end
+
+        // 播放声音
+        // var as = this.node.addComponent(cc.AudioSource);
+        // as.clip = ResMgr.Instance.getAsset("Sounds", "CK_attack1");
+        // as.loop = true;
+        // as.play();
         // end
     }
     
