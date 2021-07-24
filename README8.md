@@ -178,6 +178,10 @@ export class GameApp extends Component {
       EventMgr.Instance.RemoveListenner("TestEvent", this, this.onEventCall);
       // end
     }
+  
+  	private onEventCall(eventName: string, udata: any): void {
+        console.log(udata);
+    }
 }
 
 ```
