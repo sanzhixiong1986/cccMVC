@@ -1,96 +1,129 @@
-# mvc设计-声音管理模块
+# mvc设计-定时器
 
 ### 要点
 
-- 添加N个AudioSource用来播放音效，我们用8个来
-- 添加1个AudioSource作为播放音乐背景
-- 提供播放背景音乐，音效
-- 是否静音这些可以根据自己的需求扩展
+- 方便管理程序中的所有定时器
 
 ------
 
 
 
 ```typescript
-export class SoundMgr extends Component{
-  public static Instance:SoundMgr = null as unkown as SoundMgr;
-  private static MAX_SOUNDS = 8;//最大的数目
-  private sounds:Array<AudioSource> = []; //装载所有的操作
-  private bgMusic:AudioSource = null as numkown as AudioSource;
-  private nowIndex = 0;
-  private isMusicMute:boolean = false;
-  private isSoundMute:boolean = false;
-  onLoad(){
-    if(SoundMgr.Instance === null){
-      SoundMgr.Instance = this;
-    }
-    else{
-      this.distory();
-      return;
-    }
-    //添加8个音乐空间
-    for(let i=0;i<SoundMgr.MAX_SOUNDS;i++){
-      let as = this.node.addComponet(AudioSorce);
-      this.sounds.push(as);
-    }
-    //end
-    this.bgMusic = this.node.addComponent(AudioSorce) as AudioSource;
-    //读取本地的声音缓存
-    let value = localStorage.getItem("GAME_MUSIC_MUTE");
-    if(value){
-      let v = parseInt(value);
-      this.isMusicMute =. (v===1)?true:false;
-    }
-    value = localStorage.getItem("GAME_SOUND_MUTE");
-    if(value){
-      let v = parseInt(value);
-      this.isMusicMute =. (v===1)?true:false;
-    }
-    //end
-  }
-  
-  //播放背景音乐
-  public playBgMusic(clip:AudioClip,isLoop:boolean):void{
-    this.bgMusic.clip = clip;
-    this.bgMusic.loop = isLoop;
-    this.bgMusic.volume = (this.isMusicMute)?0:1.0;
-    this.bgMusic.play();
-  }
-  
-  //关闭背景音乐
-  public stopBgMusic():void{
-    this.bgMusic.stop();
-  }
-  
-  //播放音效
-  public playSound(clip:AudioClip){
-    if(this.isSoundMute === true){
-      return;
-    }
-    let as = this.sounds[this.nowIndex];
-    this.nowIndex ++;
-    if(this.nowIndex>=SoundMgr.MAX_SOUNDS){
-      this.nowIndex = 0;
-    }
-    as.clip = clip;
-    as.loop = false;
-    as.playOneShop(clip);
-  }
-  
-  //设置声音
-  public setMusicMute(isMute:boolean):void{
-    this.isMusicMute = isMute;
-    this.bgMusic.volume = (this.isMusicMute)?0:1.0;
-    let value = (isMute)?1:0;
-    localStorage.setItem("GAME_MUSIC_MUTE",value.toString());
-  }
-  
-  public setSoundsMute(isMute:boobean){
-    this.isSoundMute = isMute;
-    let value = (isMute)?1:0;
-    localStorage.setItem("GAME_SOUND_MUTE",value.toString());
-  }
+class TimerNode {
+    public callback: Function = null as unknown as Function;
+    public duration: number = 0; // 定时器触发的时间间隔;
+    public delay: number = 0; // 第一次触发要隔多少时间;
+    public repeat: number = 0; // 你要触发的次数;
+    public passedTime: number = 0; // 这个Timer过去的时间;
+    public param: any = null; // // 用户要传的参数
+    public isRemoved: boolean = false; // 是否已经删除了
+    public timerId: number = 0; // 标识这个timer的唯一Id号;
 }
+
+export class TimerMgr extends Component {
+    public static Instance: TimerMgr = null as unknown as TimerMgr;
+    
+    private autoIncId: number = 1; // 自增长的id, 表示唯一的timerId;
+    private timers: any = {}; // 这个timerId--->Timer对象隐映射
+    private removeTimers:  Array<TimerNode> = [];
+    private newAddTimers:  Array<TimerNode> = [];
+
+    onLoad(): void {
+        if(TimerMgr.Instance === null) {
+            TimerMgr.Instance = this;
+        }
+        else {
+            this.destroy();
+            return;
+        }
+    }
+
+    update(dt: number): void {
+        // 把新加进来的放入到我们的表里面来
+        for (let i = 0; i < this.newAddTimers.length; i++) {
+            this.timers[this.newAddTimers[i].timerId] = this.newAddTimers[i];
+        }
+        this.newAddTimers.length = 0;
+        // end
+
+        for (let key in this.timers) {
+            var timer = this.timers[key];
+            if (timer.isRemoved) {
+                this.removeTimers.push(timer);
+                continue;
+            }
+
+            timer.passedTime += dt; // 更新一下timer时间
+            if (timer.passedTime >= (timer.delay + timer.duration)) {
+                // 做一次触发
+                timer.callback(timer.param);
+                timer.repeat--;
+                timer.passedTime -= (timer.delay + timer.duration);
+                timer.delay = 0; // 很重要;
+
+                if (timer.repeat == 0)
+                { // 触发次数结束，我们是不是要删除这个Timer; 
+                    timer.isRemoved = true;
+                    this.removeTimers.push(timer);
+                }
+                // end 
+            }
+        }
+
+        // 结束以后，清理掉要删除的Timer;
+        for (let i = 0; i < this.removeTimers.length; i++) {
+            // this.timers.delete(this.removeTimers[i]);
+            delete this.timers[this.removeTimers[i].timerId];
+        }
+        this.removeTimers.length = 0;
+        // end
+    }
+
+    // [repeat < 0 or repeat == 0 表示的是无限触发]
+    public ScheduleWithParams(func: Function, param: any, repeat: number, duration: number, delay: number = 0): number
+    {
+        let timer: TimerNode = new TimerNode();
+        timer.callback = func;
+        timer.param = param;
+        timer.repeat = repeat;
+        timer.duration = duration;
+        timer.delay = delay;
+        timer.passedTime = timer.duration;
+        timer.isRemoved = false;
+
+        timer.timerId = this.autoIncId;
+        this.autoIncId ++;
+
+        // this.timers.Add(timer.timerId, timer);
+        this.newAddTimers.push(timer);
+
+        return timer.timerId;
+    }
+
+    public Once(func: Function, delay: number): number
+    {
+        return this.Schedule(func, 1, 0, delay);
+    }
+
+    public ScheduleOnce(func: Function, param: any, delay: number): number {
+        return this.ScheduleWithParams(func, param, 1, 0, delay);
+    }
+
+    // [repeat < 0 or repeat == 0 表示的是无限触发]
+    public Schedule(func: Function, repeat: number, duration: number, delay: number = 0): number
+    {
+        return this.ScheduleWithParams(func, null, repeat, duration, delay);
+    }
+
+  public Unschedule(timerId: number) {
+    if (!this.timers[timerId]) {
+      return;
+    }
+
+    let timer: TimerNode = this.timers[timerId];
+    timer.isRemoved = true;
+  }
+
 ```
 
 
@@ -169,11 +202,18 @@ export class GameApp extends Component {
         as.loop = true;
         as.play();
 				*/
-      	var clip = ResMgr.Instance.getAsset("Sounds","CK_attack1");
-      	SoundMgr.Instance.playBgMusic(clip,true);
+      	//var clip = ResMgr.Instance.getAsset("Sounds","CK_attack1");
+      	//SoundMgr.Instance.playBgMusic(clip,true);
         // end
+      var timerId = TimerMgr.Instance.ScheduleWithParams((data: any)=>{
+            console.log("timer test", data);
+        }, "joy", 0, 0.5, 3);
+
+
+        TimerMgr.Instance.Once(()=>{
+            TimerMgr.Instance.Unschedule(timerId);
+        }, 10);
     }
-    
 }
 
 ```

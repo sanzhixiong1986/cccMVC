@@ -10,4 +10,7 @@
 
 [第五天：资源管理模块](https://github.com/sanzhixiong1986/cccMVC/blob/main/README4.md)
 
-[第六天：声音管理模块](https://github.com/sanzhixiong1986/cccMVC/blob/main/README5.md)
+[第六天：声音管理模块](https://github.com/sanzhixiong1986/cccMVC/blob/main/README6.md)
+
+[第七天：定时器管理模块](https://github.com/sanzhixiong1986/cccMVC/blob/main/README5.md)
+
